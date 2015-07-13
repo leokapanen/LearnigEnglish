@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="@color/white" />
+
+    <stroke
+        android:width="2dp"
+        android:color="@color/border_grey" />
+
+    <corners
+        android:bottomLeftRadius="5dp"
+        android:bottomRightRadius="5dp"
+        android:topLeftRadius="5dp"
+        android:topRightRadius="5dp" />
+
+    <padding
+        android:bottom="@dimen/search_field_vert_padding"
+        android:left="@dimen/search_field_hor_padding"
+        android:right="@dimen/search_field_hor_padding"
+        android:top="@dimen/search_field_vert_padding" />
+
+</shape>

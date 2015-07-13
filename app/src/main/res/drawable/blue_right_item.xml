@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+            <size
+                android:width="@dimen/indicator_width"
+                android:height="@dimen/indicator_half_height" />
+
+            <solid android:color="@color/blue" />
+
+            <corners
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="0dp"
+                android:topLeftRadius="0dp"
+                android:topRightRadius="3dp" />
+
+        </shape>
+
+    </item>
+
+    <item android:top="@dimen/indicator_half_height">
+
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+            <size
+                android:width="@dimen/indicator_width"
+                android:height="@dimen/indicator_half_height" />
+
+            <solid android:color="@color/light_blue" />
+
+            <corners
+                android:bottomLeftRadius="0dp"
+                android:bottomRightRadius="3dp"
+                android:topLeftRadius="0dp"
+                android:topRightRadius="0dp" />
+
+        </shape>
+
+    </item>
+
+</layer-list>

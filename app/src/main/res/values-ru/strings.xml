@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Изучение английского</string>
+    <string name="dic_scr_title">Словарь</string>
+    <string name="search_hint">Поиск</string>
+    <string name="loading">Загрузка...</string>
+    <string name="loading_error">Ошибка загрузки!</string>
+    <string name="retry">Повторить</string>
+    <string name="not_found">Слова не были найдены</string>
+    <string name="studied">Изучено</string>
+    <string name="studying">На изучении</string>
+    <string name="study_words_btn">Тренировать слова</string>
+    <string name="vocabulary_cards">Словарные карточки</string>
+    <string name="stop_btn">Стоп</string>
+</resources>
