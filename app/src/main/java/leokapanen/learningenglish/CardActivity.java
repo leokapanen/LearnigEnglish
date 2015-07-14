@@ -1,7 +1,10 @@
 package leokapanen.learningenglish;
 
+import android.content.ClipData;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.DragEvent;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -10,13 +13,14 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import datamodel.DicRecord;
 import db.DicDB;
 
 /**
  * Created by Leonid Kabanen on 13.07.15.
  */
-public class CardActivity extends AppCompatActivity {
+public class CardActivity extends AppCompatActivity implements View.OnDragListener {
 
     @Bind(R.id.progress_bar)
     ProgressBar progressBar;
@@ -56,6 +60,16 @@ public class CardActivity extends AppCompatActivity {
     // false == right translation was selected
     private Boolean selectedLTranslation = null;
 
+    // null == nothing is dragging
+    // true == left sentence is dragging
+    // false == right sentence is dragging
+    private Boolean draggingLSentence = null;
+
+    // null == nothing is dragging
+    // true == left translation is dragging
+    // false == right translation is dragging
+    private Boolean draggingLTranslation = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +90,11 @@ public class CardActivity extends AppCompatActivity {
         }
 
         progressBar.setMax(records.size() / 2);
+
+        lSentence.setOnDragListener(this);
+        rSentence.setOnDragListener(this);
+        lTranslation.setOnDragListener(this);
+        rTranslation.setOnDragListener(this);
 
         nextStep();
     }
@@ -152,16 +171,7 @@ public class CardActivity extends AppCompatActivity {
                 }
             }
 
-            if (lSentence.isEnabled()) {
-                lSentence.setBackgroundResource(UNSELECTED_BG);
-            }
-            if (rSentence.isEnabled()) {
-                rSentence.setBackgroundResource(UNSELECTED_BG);
-            }
-            selectedLSentence = null;
-            selectedLTranslation = null;
-            lTranslation.setBackgroundResource(UNSELECTED_BG);
-            rTranslation.setBackgroundResource(UNSELECTED_BG);
+            clearSelection();
 
             if (!lSentence.isEnabled() && !rSentence.isEnabled()) {
                 step++;
@@ -169,6 +179,19 @@ public class CardActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    private void clearSelection() {
+        if (lSentence.isEnabled()) {
+            lSentence.setBackgroundResource(UNSELECTED_BG);
+        }
+        if (rSentence.isEnabled()) {
+            rSentence.setBackgroundResource(UNSELECTED_BG);
+        }
+        selectedLSentence = null;
+        selectedLTranslation = null;
+        lTranslation.setBackgroundResource(UNSELECTED_BG);
+        rTranslation.setBackgroundResource(UNSELECTED_BG);
     }
 
     // Listeners
@@ -216,6 +239,116 @@ public class CardActivity extends AppCompatActivity {
         rTranslation.setBackgroundResource(SELECTED_BG);
         lTranslation.setBackgroundResource(UNSELECTED_BG);
         checkAndUpdateCardState();
+    }
+
+    @OnLongClick(R.id.l_sentence)
+    public boolean onLongClickLSentence(View v) {
+        if (!v.isEnabled()) {
+            return false;
+        }
+
+        draggingLSentence = true;
+        startDrag(v);
+
+        return false;
+    }
+
+    @OnLongClick(R.id.r_sentence)
+    public boolean onLongClickRSentence(View v) {
+        if (!v.isEnabled()) {
+            return false;
+        }
+
+        draggingLSentence = false;
+        startDrag(v);
+
+        return false;
+    }
+
+    @OnLongClick(R.id.l_translation)
+    public boolean onLongClickLTranslation(View v) {
+        draggingLTranslation = true;
+        startDrag(v);
+
+        return false;
+    }
+
+    @OnLongClick(R.id.r_translation)
+    public boolean onLongClickRTranslation(View v) {
+        draggingLTranslation = false;
+        startDrag(v);
+
+        return false;
+    }
+
+    private void startDrag(View v) {
+        clearSelection();
+
+        ClipData dragData = ClipData.newPlainText("text", "translation");
+        v.startDrag(
+                dragData,
+                new View.DragShadowBuilder(v),
+                v,
+                0
+        );
+    }
+
+    @Override
+    public boolean onDrag(View targetView, DragEvent event) {
+        int action = event.getAction();
+
+        switch (action) {
+            case DragEvent.ACTION_DRAG_STARTED: {
+                return true;
+            }
+            case DragEvent.ACTION_DRAG_LOCATION: {
+                return true;
+            }
+            case DragEvent.ACTION_DRAG_ENTERED: {
+                return true;
+            }
+            case DragEvent.ACTION_DROP: {
+                if (draggingLSentence != null) {
+
+                    if (targetView.getId() == lTranslation.getId()) {
+                        selectedLTranslation = true;
+                    }
+
+                    if (targetView.getId() == rTranslation.getId()) {
+                        selectedLTranslation = false;
+                    }
+
+                    if (selectedLTranslation != null) {
+                        selectedLSentence = draggingLSentence;
+                    }
+                }
+
+                if (draggingLTranslation != null) {
+                    if ((targetView.isEnabled()) && (targetView.getId() == lSentence.getId())) {
+                        selectedLSentence = true;
+                    }
+
+                    if ((targetView.isEnabled()) && (targetView.getId() == rSentence.getId())) {
+                        selectedLSentence = false;
+                    }
+
+                    if (selectedLSentence != null) {
+                        selectedLTranslation = draggingLTranslation;
+                    }
+                }
+
+                targetView.invalidate();
+                draggingLSentence = null;
+                draggingLTranslation = null;
+
+                checkAndUpdateCardState();
+
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
     }
 
 }
